@@ -1,0 +1,17 @@
+{
+  "window_seconds": 300,
+  "prior": "min(1, log(1 + followers) / 10) * clip(account_age_days / 365 + 0.25, 0, 1) * (1 - 0.6 * shill_score)",
+  "conviction": "tanh(abs(clean_net) * sqrt(mass) / 3) * (1 - 0.5 * noise_ratio)",
+  "rules": [
+    {"name": "fresh_sock",         "when": "account_age_days < 3 and followers < 25",        "effect": "forbid"},
+    {"name": "shill_lexicon",      "when": "shill_score >= 0.6",                             "effect": "forbid"},
+    {"name": "copypasta_echo",     "when": "dup_cluster >= 4 and dup_rank >= 1",             "effect": "forbid"},
+    {"name": "copypasta_seed",     "when": "dup_cluster >= 4 and dup_rank == 0",             "effect": "cap:0.25"},
+    {"name": "spam_cadence",       "when": "author_posts >= 6",                              "effect": "cap:0.2"},
+    {"name": "engagement_anomaly", "when": "reposts > 25 * (likes + 1) and followers < 200", "effect": "cap:0.15"},
+    {"name": "young_account",      "when": "account_age_days < 14",                          "effect": "cap:0.5"},
+    {"name": "tainted_cluster",    "when": "cluster_size >= 3 and cluster_dead_frac >= 0.5", "effect": "forbid"},
+    {"name": "tainted_author",     "when": "author_dead >= 2",                               "effect": "forbid"},
+    {"name": "verified_floor",     "when": "verified and shill_score < 0.3",                 "effect": "floor:0.6"}
+  ]
+}
